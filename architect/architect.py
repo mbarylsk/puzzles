@@ -22,82 +22,11 @@ class Architect:
 
     def __init__(self, me, mc, mh, wg, h, w):
         self.matrix_excluded = me
-        self.matrix_container = mc
+        self.matrix_gas = mc
         self.matrix_house = mh
         self.wages = wg
         self.h = h
         self.w = w
-
-    def print (self):
-        print ("\n")
-        border = "+"
-        for i in range(self.w):
-            border += "---"
-        border += "+"
-        print (border)
-        for i in range(self.h):
-            line = " "
-            for j in range(self.w):
-                if self.matrix_house[i][j] == 1:
-                    line+= " H "
-                elif self.matrix_container[i][j] == 1:
-                    line+= " o "
-                elif self.matrix_excluded[i][j] == 1:
-                    line+= " . "
-                if self.matrix_excluded[i][j] == 0 and self.matrix_container[i][j] == 0 and self.matrix_house[i][j] == 0:
-                    line+= " _ "
-            print (line)
-        print (border)
-        print ("\nLegend:")
-        print (" H - house")
-        print (" o - gas")
-        print (" . - field excluded from analysis")
-        print (" _ - unknown")
-        
-
-    def is_solved (self):
-
-        # check if wages match number of containers - horizontally
-        for i in range(self.h):
-            temp_sum = 0
-            for j in range(self.w):
-                temp_sum += self.matrix_container[i][j]
-            if temp_sum != self.wages[0][i]:
-                return False
-
-        # check if wages match number of containers - vertically
-        for j in range(self.h):
-            temp_sum = 0
-            for i in range(self.w):
-               temp_sum += self.matrix_container[i][j]
-            if temp_sum != self.wages[1][j]:
-                return False
-
-        # check if houses and containers do not overlap
-        temp_sum_containers = 0
-        temp_sum_houses = 0
-        for i in range(self.h):
-            for j in range(self.w):
-                if self.matrix_container[i][j] == 1 and self.matrix_house[i][j] == 1:
-                    return False
-                temp_sum_containers += self.matrix_container[i][j]
-                temp_sum_houses += self.matrix_house[i][j]
-
-        # number of houses must match number of containers
-        if temp_sum_containers != temp_sum_houses:
-            return False
-
-        # check if containers are not direct neighbours
-        for i in range(self.h):
-            for j in range(self.w):
-                if self.matrix_container[i][j] == 1:
-                    temp_submatrix_3 = self.get_submatrix_3 (self.matrix_container, i, j)
-                    temp_target_3 = numpy.zeros ((3, 3))
-                    temp_target_3[1][1] = 1
-                    if not numpy.allclose(temp_submatrix_3, temp_target_3):
-                        return False
-    
-        return True
 
     def get_submatrix_3 (self, i_m, i_c_x, i_c_y):
         o_m = numpy.zeros ((3,3))
@@ -127,34 +56,112 @@ class Architect:
 
         return o_m
 
+    def are_matrix_equal (self, m1, m2):
+        return numpy.allclose(m1, m2)
+
+    def is_matrix_zeroed (self, m):
+        if numpy.count_nonzero(m) > 0:
+            return True
+        else:
+            return False
+
+    def print (self):
+        print ("\n")
+        border = "+"
+        for i in range(self.w):
+            border += "---"
+        border += "+"
+        print (border)
+        for i in range(self.h):
+            line = " "
+            for j in range(self.w):
+                if self.matrix_house[i][j] == 1:
+                    line+= " H "
+                elif self.matrix_gas[i][j] == 1:
+                    line+= " o "
+                elif self.matrix_excluded[i][j] == 1:
+                    line+= " . "
+                if self.matrix_excluded[i][j] == 0 and self.matrix_gas[i][j] == 0 and self.matrix_house[i][j] == 0:
+                    line+= " _ "
+            print (line)
+        print (border)
+        print ("\nLegend:")
+        print (" H - house")
+        print (" o - gas")
+        print (" . - field excluded from analysis")
+        print (" _ - unknown")
+
+    def is_solved (self):
+
+        # check if wages match number of gas containers - horizontally
+        for i in range(self.h):
+            temp_sum = 0
+            for j in range(self.w):
+                temp_sum += self.matrix_gas[i][j]
+            if temp_sum != self.wages[0][i]:
+                return False
+
+        # check if wages match number of gas containers - vertically
+        for j in range(self.h):
+            temp_sum = 0
+            for i in range(self.w):
+               temp_sum += self.matrix_gas[i][j]
+            if temp_sum != self.wages[1][j]:
+                return False
+
+        # check if houses and gas containers do not overlap
+        temp_sum_gas = 0
+        temp_sum_houses = 0
+        for i in range(self.h):
+            for j in range(self.w):
+                if self.matrix_gas[i][j] == 1 and self.matrix_house[i][j] == 1:
+                    return False
+                temp_sum_gas += self.matrix_gas[i][j]
+                temp_sum_houses += self.matrix_house[i][j]
+
+        # number of houses must match number of gas containers
+        if temp_sum_gas != temp_sum_houses:
+            return False
+
+        # check if gas container are not direct neighbours
+        for i in range(self.h):
+            for j in range(self.w):
+                if self.matrix_gas[i][j] == 1:
+                    temp_submatrix_3 = self.get_submatrix_3 (self.matrix_gas, i, j)
+                    temp_target_3 = numpy.zeros ((3, 3))
+                    temp_target_3[1][1] = 1
+                    if not self.are_matrix_equal (temp_submatrix_3, temp_target_3):
+                        return False
+    
+        return True
+
     def update_excluded (self):
 
-        # exlude fields where is either house or container
+        # case 1: exlude fields where is either house or gas
         for i in range(self.h):
             for j in range(self.w):
                 if self.matrix_house[i][j] == 1:
                     self.matrix_excluded[i][j] = 1
 
-                if self.matrix_container[i][j] == 1:
+                if self.matrix_gas[i][j] == 1:
                     self.matrix_excluded[i][j] = 1
 
-        # if wages are 0
+        # case 2: if wages are 0 - horizontally and vertically
         for i in range(self.h):
             if self.wages[0][i] == 0:
                 for j in range(self.w):
                     self.matrix_excluded[i][j] = 1
-
         for j in range(self.w):
             if self.wages[1][j] == 0:
                 for i in range(self.w):
                     self.matrix_excluded[i][j] = 1
 
-        # each containes must have space around
-        shape_x = self.matrix_container.shape[0]
-        shape_y = self.matrix_container.shape[1]
+        # case 3: each gas container must have space around
+        shape_x = self.matrix_gas.shape[0]
+        shape_y = self.matrix_gas.shape[1]
         for i in range(self.h):
             for j in range(self.w):
-                if self.matrix_container[i][j] == 1:
+                if self.matrix_gas[i][j] == 1:
                     if i-1 >= 0:
                         self.matrix_excluded[i-1][j] = 1
                     if i+1 < shape_x:
@@ -171,3 +178,13 @@ class Architect:
                         self.matrix_excluded[i-1][j+1] = 1
                     if i+1 < shape_x and j-1 >= 0:
                         self.matrix_excluded[i+1][j-1] = 1
+
+        # case 4: exclude fields that are too far from houses
+        for i in range(self.h):
+            for j in range(self.w):
+                if self.matrix_excluded[i][j] == 0:
+                    if self.is_matrix_zeroed (self.get_submatrix_3 (self.matrix_house, i, j)) == 0:
+                        self.matrix_excluded[i][j] = 1
+                
+        # case 5: exclude fields that are close to houses which are already connected to gas
+        # TBD
