@@ -56,7 +56,7 @@ class Architect:
 
         return o_m
 
-    def are_matrix_equal (self, m1, m2):
+    def are_matrices_equal (self, m1, m2):
         return numpy.allclose(m1, m2)
 
     def is_matrix_zeroed (self, m):
@@ -90,6 +90,32 @@ class Architect:
         print (" o - gas")
         print (" . - field excluded from analysis")
         print (" _ - unknown")
+
+    def is_x_correct (self, m, x):
+        shape_x = m.shape[0]
+        if x >= 0 and x < shape_x:
+            return True
+        else:
+            return False
+
+    def is_y_correct (self, m, y):
+        shape_y = m.shape[1]
+        if y >= 0 and y < shape_y:
+            return True
+        else:
+            return False
+
+    def is_house_with_gas (self, x, y):
+        if self.matrix_house [x][y]:
+            if self.is_x_correct (self.matrix_gas, x-1) and self.matrix_gas[x-1][y] == 1:
+                return True
+            if self.is_x_correct (self.matrix_gas, x+1) and self.matrix_gas[x+1][y] == 1:
+                return True
+            if self.is_y_correct (self.matrix_gas, y-1) and self.matrix_gas[x][y-1] == 1:
+                return True
+            if self.is_y_correct (self.matrix_gas, y+1) and self.matrix_gas[x][y+1] == 1:
+                return True
+        return False
 
     def is_solved (self):
 
@@ -127,15 +153,17 @@ class Architect:
         for i in range(self.h):
             for j in range(self.w):
                 if self.matrix_gas[i][j] == 1:
-                    temp_submatrix_3 = self.get_submatrix_3 (self.matrix_gas, i, j)
                     temp_target_3 = numpy.zeros ((3, 3))
                     temp_target_3[1][1] = 1
-                    if not self.are_matrix_equal (temp_submatrix_3, temp_target_3):
+                    if not self.are_matrices_equal (self.get_submatrix_3 (self.matrix_gas, i, j), temp_target_3):
                         return False
     
         return True
 
     def update_excluded (self):
+
+        shape_x = self.matrix_gas.shape[0]
+        shape_y = self.matrix_gas.shape[1]
 
         # case 1: exlude fields where is either house or gas
         for i in range(self.h):
@@ -157,8 +185,6 @@ class Architect:
                     self.matrix_excluded[i][j] = 1
 
         # case 3: each gas container must have space around
-        shape_x = self.matrix_gas.shape[0]
-        shape_y = self.matrix_gas.shape[1]
         for i in range(self.h):
             for j in range(self.w):
                 if self.matrix_gas[i][j] == 1:
@@ -187,4 +213,18 @@ class Architect:
                         self.matrix_excluded[i][j] = 1
                 
         # case 5: exclude fields that are close to houses which are already connected to gas
-        # TBD
+        #         and there is no other option for gas available
+        for i in range(self.h):
+            for j in range(self.w):
+                if self.matrix_excluded[i][j] == 0:
+                    sum_available_houses = 0
+                    if i-1 >= 0 and self.matrix_house[i-1][j] == 1 and not self.is_house_with_gas (i-1, j):
+                        sum_available_houses += 1
+                    if i+1 < shape_x and self.matrix_house[i+1][j] == 1 and not self.is_house_with_gas (i+1, j):
+                        sum_available_houses += 1
+                    if j-1 >= 0 and self.matrix_house[i][j-1] == 1 and not self.is_house_with_gas (i, j-1):
+                        sum_available_houses += 1
+                    if j+1 < shape_y and self.matrix_house[i][j+1] == 1 and not self.is_house_with_gas (i, j+1):
+                        sum_available_houses += 1
+                    if sum_available_houses == 0:
+                        self.matrix_excluded[i][j] = 1
