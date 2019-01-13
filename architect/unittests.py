@@ -105,6 +105,27 @@ class TestMethods(unittest.TestCase):
         m[2][2] = 1
         self.assertFalse(dp.is_matrix_zeroed(m))
 
+    def test_are_matrices_equal (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+
+        dp = dataprocessing.DataProcessing ()
+
+        m1 = numpy.zeros((10, 10))
+        m1[1][2] = 1
+        m2 = numpy.zeros((10, 10))
+        m2[1][2] = 1
+        self.assertTrue(dp.are_matrices_equal(m1, m2))
+
+    def test_are_matrices_equal_negative (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+
+        dp = dataprocessing.DataProcessing ()
+
+        m1 = numpy.zeros((10, 10))
+        m1[1][2] = 1
+        m2 = numpy.zeros((10, 10))
+        self.assertFalse(dp.are_matrices_equal(m1, m2))
+
     def test_get_submatrix_3 (self):
         print ("\n TEST CASE:", sys._getframe().f_code.co_name)
         matrix_gas = numpy.zeros((6, 6))
