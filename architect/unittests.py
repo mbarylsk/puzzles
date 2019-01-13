@@ -18,7 +18,9 @@
 
 import unittest
 import numpy
+import sys
 import architect
+import dataprocessing
 
 #############################################################
 # Unit tests
@@ -26,7 +28,7 @@ import architect
 
 class TestMethods(unittest.TestCase):
     def test_is_solved_positive(self):
-        print ("\ntest_is_solved_positive")
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
         h = 6
         w = 6
         matrix_excluded = numpy.zeros((h, w))
@@ -48,7 +50,8 @@ class TestMethods(unittest.TestCase):
         matrix_gas[5][1] = 1
         wages = [[1,0,2,1,2,1], [1,1,2,1,1,1]]
 
-        a = architect.Architect(matrix_excluded, matrix_gas, matrix_house, wages, h, w)
+        dp = dataprocessing.DataProcessing ()
+        a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w)
     
         self.assertTrue(a.is_solved ())
 
@@ -56,7 +59,7 @@ class TestMethods(unittest.TestCase):
         a.print()
 
     def test_is_solved_negative (self):
-        print ("\ntest_is_solved_negative")
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
         h = 6
         w = 6
         matrix_excluded = numpy.zeros((h, w))
@@ -78,27 +81,33 @@ class TestMethods(unittest.TestCase):
         matrix_gas[5][1] = 1
         wages = [[1,0,2,1,2,1], [1,1,2,1,1,1]]
 
-        a = architect.Architect(matrix_excluded, matrix_gas, matrix_house, wages, h, w)
+        dp = dataprocessing.DataProcessing ()
+        a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w)
     
         self.assertFalse(a.is_solved ())
 
         a.update_excluded()
         a.print()
 
+    def test_is_matrix_zeroed (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+
+        dp = dataprocessing.DataProcessing ()
+
+        m = numpy.zeros((10, 10))
+        self.assertTrue(dp.is_matrix_zeroed(m))
+
+    def test_is_matrix_zeroed_negative (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+        dp = dataprocessing.DataProcessing ()
+
+        m = numpy.zeros((10, 10))
+        m[2][2] = 1
+        self.assertFalse(dp.is_matrix_zeroed(m))
+
     def test_get_submatrix_3 (self):
-        print ("\ntest_get_submatrix_3")
-        h = 6
-        w = 6
-        matrix_excluded = numpy.zeros((h, w))
-        matrix_gas = numpy.zeros((h, w))
-        matrix_house = numpy.zeros((h, w))
-        matrix_house[0][1] = 1
-        matrix_house[3][2] = 1
-        matrix_house[3][4] = 1
-        matrix_house[4][0] = 1
-        matrix_house[4][4] = 1
-        matrix_house[5][2] = 1
-        matrix_house[5][5] = 1
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+        matrix_gas = numpy.zeros((6, 6))
         matrix_gas[0][2] = 1
         matrix_gas[2][2] = 1
         matrix_gas[2][4] = 1
@@ -106,22 +115,21 @@ class TestMethods(unittest.TestCase):
         matrix_gas[4][3] = 1
         matrix_gas[4][5] = 1
         matrix_gas[5][1] = 1
-        wages = [[1,0,2,1,2,1], [1,1,2,1,1,1]]
 
         temp_target_3 = numpy.zeros ((3, 3))
         temp_target_3[1][1] = 1
         
-        a = architect.Architect(matrix_excluded, matrix_gas, matrix_house, wages, h, w)
+        dp = dataprocessing.DataProcessing ()
 
-        result1 = numpy.allclose(a.get_submatrix_3(matrix_gas, 2, 2), temp_target_3)
+        result1 = numpy.allclose(dp.get_submatrix_3(matrix_gas, 2, 2), temp_target_3)
         self.assertTrue(result1)
 
-        result2 = numpy.allclose(a.get_submatrix_3(matrix_gas, 0, 2), temp_target_3)
+        result2 = numpy.allclose(dp.get_submatrix_3(matrix_gas, 0, 2), temp_target_3)
         self.assertTrue(result2)
 
-        result3 = numpy.allclose(a.get_submatrix_3(matrix_gas, 5, 1), temp_target_3)
+        result3 = numpy.allclose(dp.get_submatrix_3(matrix_gas, 5, 1), temp_target_3)
         self.assertTrue(result3)
-
+        
 #############################################################
 # Main - run unit tests
 #############################################################
