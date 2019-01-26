@@ -17,6 +17,7 @@
 #
 
 import numpy
+import itertools
 
 class DataProcessing:
 
@@ -70,3 +71,11 @@ class DataProcessing:
             return True
         else:
             return False
+
+    def get_combinations (self, input_fields, output_count):
+        list_combinations = []
+        i = 0
+        for comb in itertools.combinations(input_fields, output_count):
+            list_combinations.append(comb)
+        return list_combinations
+

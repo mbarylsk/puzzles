@@ -57,17 +57,34 @@ class Architect:
         print (" _ - unknown")
 
     def is_gas (self, x, y):
-        if self.matrix_gas [x][y] == 1:
+        if self.dp.is_x_correct (self.matrix_gas, x) and self.dp.is_x_correct (self.matrix_gas, y) and self.matrix_gas [x][y] > 0:
+            return True
+        return False
+
+    def is_gas_candidate (self, x, y):
+        if self.dp.is_x_correct (self.matrix_gas, x) and self.dp.is_x_correct (self.matrix_gas, y) and self.matrix_gas [x][y] == 1:
             return True
         return False
 
     def is_house (self, x, y):
-        if self.matrix_house [x][y] > 0:
+        if self.dp.is_x_correct (self.matrix_house, x) and self.dp.is_x_correct (self.matrix_house, y) and self.matrix_house [x][y] > 0:
             return True
         return False
 
+    def is_house_with_gas (self, x, y):
+        if self.is_house (x, y):
+            if self.is_gas(x-1, y):
+                return True
+            if self.is_gas(x+1, y):
+                return True
+            if self.is_gas(x, y-1):
+                return True
+            if self.is_gas(x, y+1):
+                return True
+        return False
+
     def is_excluded (self, x, y):
-        if self.matrix_excluded [x][y] == 1:
+        if self.dp.is_x_correct (self.matrix_excluded, x) and self.dp.is_x_correct (self.matrix_excluded, y) and self.matrix_excluded [x][y] == 1:
             return True
         return False
 
@@ -75,25 +92,31 @@ class Architect:
         if self.dp.is_x_correct(self.matrix_excluded, x) and self.dp.is_y_correct(self.matrix_excluded, y):
             self.matrix_excluded [x][y] = 1
 
-    def set_gas (self, x, y):
+    def set_gas_candidate (self, x, y):
         if self.dp.is_x_correct(self.matrix_gas, x) and self.dp.is_y_correct(self.matrix_gas, y):
             self.matrix_gas [x][y] = 1
+
+    def unset_gas (self, x, y):
+        if self.dp.is_x_correct(self.matrix_gas, x) and self.dp.is_y_correct(self.matrix_gas, y):
+            self.matrix_gas [x][y] = 0
 
     def set_house_with_gas (self, x, y):
         if self.dp.is_x_correct(self.matrix_house, x) and self.dp.is_y_correct(self.matrix_house, y):
             self.matrix_house [x][y] = 2
 
-    def is_house_with_gas (self, x, y):
-        if self.is_house (x, y):
-            if self.dp.is_x_correct (self.matrix_gas, x-1) and self.is_gas(x-1, y):
-                return True
-            if self.dp.is_x_correct (self.matrix_gas, x+1) and self.is_gas(x+1, y):
-                return True
-            if self.dp.is_y_correct (self.matrix_gas, y-1) and self.is_gas(x, y-1):
-                return True
-            if self.dp.is_y_correct (self.matrix_gas, y+1) and self.is_gas(x, y+1):
-                return True
-        return False
+    def cleanup_of_gas_candidates (self):
+        for i in range(self.h):
+            for j in range(self.w):
+                if self.is_gas_candidate (i, j):
+                    self.unset_gas (i, j)
+
+    def get_all_not_excluded (self):
+        results = []
+        for i in range(self.h):
+            for j in range(self.w):
+                if not self.is_excluded (i, j):
+                    results.append ((i,j))
+        return results
 
     def is_solved (self):
 
@@ -147,25 +170,24 @@ class Architect:
         for i in range(self.h):
             for j in range(self.w):
                 if with_gas:
-                    if self.matrix_house [x][y] == 2:
+                    if self.matrix_house [i][j] == 2:
                         output_sum += 1
                 else:
-                    if self.matrix_house [x][y] == 1:
+                    if self.matrix_house [i][j] == 1:
                         output_sum += 1
         return output_sum
 
     def update_houses_with_gas (self):
-        sum_houses = self.get_number_of_houses ()
         for i in range(self.h):
             for j in range(self.w):
-                if self.is_house (x, y):
-                    if self.dp.is_x_correct (self.matrix_gas, x-1) and self.is_gas(x-1, y):
+                if self.is_house (i, j):
+                    if self.dp.is_x_correct (self.matrix_gas, i-1) and self.is_gas(i-1, j):
                         return True
-                    if self.dp.is_x_correct (self.matrix_gas, x+1) and self.is_gas(x+1, y):
+                    if self.dp.is_x_correct (self.matrix_gas, i+1) and self.is_gas(i+1, j):
                         return True
-                    if self.dp.is_y_correct (self.matrix_gas, y-1) and self.is_gas(x, y-1):
+                    if self.dp.is_y_correct (self.matrix_gas, j-1) and self.is_gas(i, j-1):
                         return True
-                    if self.dp.is_y_correct (self.matrix_gas, y+1) and self.is_gas(x, y+1):
+                    if self.dp.is_y_correct (self.matrix_gas, j+1) and self.is_gas(i, j+1):
                         return True
 
     def update_excluded (self):
@@ -232,3 +254,29 @@ class Architect:
                         sum_available_houses += 1
                     if sum_available_houses == 0:
                         self.set_excluded (i, j)
+
+    def solve (self):
+
+        self.update_excluded ()
+        self.update_houses_with_gas ()
+        solved = False
+        while not solved:
+
+            empty_fields = self.get_all_not_excluded ()
+            houses_to_be_fixed = self.get_number_of_houses (False)
+            combinations_to_check = self.dp.get_combinations (empty_fields, houses_to_be_fixed)
+
+            for combination in combinations_to_check:
+                for field in combination:
+                    (x, y) = field
+                    self.set_gas_candidate (x, y)
+            
+                self.update_excluded ()
+                self.update_houses_with_gas ()
+                solved = self.is_solved ()
+                if solved:
+                    break
+                else:
+                    self.cleanup_of_gas_candidates()
+
+        self.print ()
