@@ -150,7 +150,21 @@ class TestMethods(unittest.TestCase):
 
         result3 = numpy.allclose(dp.get_submatrix_3(matrix_gas, 5, 1), temp_target_3)
         self.assertTrue(result3)
-        
+
+    def test_get_combinations (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+
+        dp = dataprocessing.DataProcessing ()
+
+        c1 = dp.get_combinations ([(1,1),(2,3),(3,2)], 1)
+        self.assertEqual (c1, [((1,1),), ((2,3),), ((3,2),)])
+
+        c2 = dp.get_combinations ([(1,1),(2,3),(3,2)], 2)
+        self.assertEqual (c2, [((1,1),(2,3),), ((1,1),(3,2)), ((2,3),(3,2),)])
+
+        c3 = dp.get_combinations ([(1,1),(2,3),(3,2)], 3)
+        self.assertEqual (c3, [((1,1),(2,3),(3,2),)])
+
 #############################################################
 # Main - run unit tests
 #############################################################
