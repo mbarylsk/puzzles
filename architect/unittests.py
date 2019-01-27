@@ -51,12 +51,12 @@ class TestMethods(unittest.TestCase):
         wages = [[1,0,2,1,2,1], [1,1,2,1,1,1]]
 
         dp = dataprocessing.DataProcessing ()
-        a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w)
+        a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
     
         self.assertTrue(a.is_solved ())
 
         a.update_excluded()
-        a.print()
+        a.print(False)
 
     def test_is_solved_negative (self):
         print ("\n TEST CASE:", sys._getframe().f_code.co_name)
@@ -82,12 +82,12 @@ class TestMethods(unittest.TestCase):
         wages = [[1,0,2,1,2,1], [1,1,2,1,1,1]]
 
         dp = dataprocessing.DataProcessing ()
-        a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w)
+        a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
     
         self.assertFalse(a.is_solved ())
 
         a.update_excluded()
-        a.print()
+        a.print(False)
 
     def test_is_matrix_zeroed (self):
         print ("\n TEST CASE:", sys._getframe().f_code.co_name)
@@ -156,14 +156,25 @@ class TestMethods(unittest.TestCase):
 
         dp = dataprocessing.DataProcessing ()
 
-        c1 = dp.get_combinations ([(1,1),(2,3),(3,2)], 1)
+        c1 = dp.get_combinations ([(1,1),(2,3),(3,2)], 1, 10, 0)
         self.assertEqual (c1, [((1,1),), ((2,3),), ((3,2),)])
 
-        c2 = dp.get_combinations ([(1,1),(2,3),(3,2)], 2)
-        self.assertEqual (c2, [((1,1),(2,3),), ((1,1),(3,2)), ((2,3),(3,2),)])
+        c2 = dp.get_combinations ([(1,1),(2,3),(3,2)], 2, 10, 0)
+        self.assertEqual (c2, [((1,1),(2,3)), ((1,1),(3,2)), ((2,3),(3,2))])
 
-        c3 = dp.get_combinations ([(1,1),(2,3),(3,2)], 3)
+        c3 = dp.get_combinations ([(1,1),(2,3),(3,2)], 3, 10, 0)
         self.assertEqual (c3, [((1,1),(2,3),(3,2),)])
+
+    def test_get_combinations_partial (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+
+        dp = dataprocessing.DataProcessing ()
+
+        c1 = dp.get_combinations ([(1,1),(2,3),(3,2)], 2, 2, 0)
+        self.assertEqual (c1, [((1,1),(2,3)), ((1,1),(3,2))])
+
+        c2 = dp.get_combinations ([(1,1),(2,3),(3,2)], 2, 2, 2)
+        self.assertEqual (c2, [((2,3),(3,2))])
 
 #############################################################
 # Main - run unit tests

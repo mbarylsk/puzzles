@@ -20,6 +20,8 @@ import numpy
 import architect
 import dataprocessing
 
+dp = dataprocessing.DataProcessing ()
+
 h = 6
 w = 6
 matrix_excluded = numpy.zeros((h, w))
@@ -34,7 +36,49 @@ matrix_house[5][2] = 1
 matrix_house[5][5] = 1
 wages = [[1,0,2,1,2,1], [1,1,2,1,1,1]]
 
-dp = dataprocessing.DataProcessing ()
-a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w)
+a1 = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, True)
+a1.print (False)
+a1.solve ()
 
-a.solve ()
+h = 12
+w = 12
+matrix_excluded = numpy.zeros((h, w))
+matrix_gas = numpy.zeros((h, w))
+matrix_house = numpy.zeros((h, w))
+matrix_house[0][6] = 1
+matrix_house[0][8] = 1
+matrix_house[0][10] = 1
+matrix_house[1][2] = 1
+matrix_house[1][3] = 1
+matrix_house[1][6] = 1
+matrix_house[1][9] = 1
+matrix_house[2][10] = 1
+matrix_house[3][1] = 1
+matrix_house[3][3] = 1
+matrix_house[3][5] = 1
+matrix_house[4][6] = 1
+matrix_house[4][9] = 1
+matrix_house[5][4] = 1
+matrix_house[5][10] = 1
+matrix_house[6][0] = 1
+matrix_house[6][2] = 1
+matrix_house[6][9] = 1
+matrix_house[8][0] = 1
+matrix_house[8][5] = 1
+matrix_house[8][9] = 1
+matrix_house[9][1] = 1
+matrix_house[9][4] = 1
+matrix_house[9][7] = 1
+matrix_house[9][10] = 1
+matrix_house[9][11] = 1
+matrix_house[10][2] = 1
+matrix_house[11][2] = 1
+matrix_house[11][7] = 1
+matrix_house[11][9] = 1
+matrix_house[11][11] = 1
+
+wages = [[5,1,2,4,0,5,0,4,2,3,2,3], [4,2,2,3,1,3,3,2,1,5,0,5]]
+
+a2 = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, True)
+#a2.print (False)
+#a2.solve ()

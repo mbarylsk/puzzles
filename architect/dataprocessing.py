@@ -72,10 +72,16 @@ class DataProcessing:
         else:
             return False
 
-    def get_combinations (self, input_fields, output_count):
+    def get_combinations (self, input_fields, output_count, max_combinations, start_from_combination):
         list_combinations = []
         i = 0
+        c = 0
         for comb in itertools.combinations(input_fields, output_count):
-            list_combinations.append(comb)
+            if i >= start_from_combination and c < max_combinations:
+                list_combinations.append(comb)
+                c += 1
+            i += 1
+            if c >= max_combinations:
+                break
         return list_combinations
 
