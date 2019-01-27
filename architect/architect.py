@@ -49,9 +49,9 @@ class Architect:
             for j in range(self.w):
                 if self.is_house(i, j, print_temp):
                     line+= " H "
-                elif self.is_gas (i, j, print_temp) == 1:
+                elif self.is_gas (i, j, print_temp):
                     line+= " o "
-                elif self.is_excluded (i, j, print_temp) == 1:
+                elif self.is_excluded (i, j, print_temp):
                     line+= " . "
                 if not self.is_excluded (i, j, print_temp) and not self.is_gas (i, j, print_temp) and not self.is_house (i, j, print_temp):
                     line+= " _ "
@@ -117,6 +117,10 @@ class Architect:
     def set_gas_candidate (self, x, y):
         if self.dp.is_x_correct(self.matrix_gas, x) and self.dp.is_y_correct(self.matrix_gas, y):
             self.matrix_gas [x][y] = 1
+
+    def set_gas_with_house (self, x, y):
+        if self.dp.is_x_correct(self.matrix_gas, x) and self.dp.is_y_correct(self.matrix_gas, y):
+            self.matrix_gas [x][y] = 2
 
     def unset_gas (self, x, y):
         if self.dp.is_x_correct(self.matrix_gas, x) and self.dp.is_y_correct(self.matrix_gas, y):
@@ -192,6 +196,7 @@ class Architect:
         for i in range(self.h):
             for j in range(self.w):
                 if use_temp:
+                    #print (self.matrix_house_temp)
                     if with_gas:
                         if self.matrix_house_temp [i][j] == 2:
                             output_sum += 1
@@ -210,16 +215,30 @@ class Architect:
     def update_houses_with_gas (self, use_temp):
         for i in range(self.h):
             for j in range(self.w):
+                c = 0
+                x = 0
+                y = 0
                 if self.is_house (i, j, use_temp):
                     if self.dp.is_x_correct (self.matrix_gas, i-1) and self.is_gas(i-1, j, use_temp):
-                        return True
+                        c += 1
+                        x = i-1
+                        y = j
                     if self.dp.is_x_correct (self.matrix_gas, i+1) and self.is_gas(i+1, j, use_temp):
-                        return True
+                        c += 1
+                        x = i+1
+                        y = j
                     if self.dp.is_y_correct (self.matrix_gas, j-1) and self.is_gas(i, j-1, use_temp):
-                        return True
+                        c += 1
+                        x = i
+                        y = j-1
                     if self.dp.is_y_correct (self.matrix_gas, j+1) and self.is_gas(i, j+1, use_temp):
-                        return True
-        return False
+                        c += 1
+                        x = i
+                        y = j+1
+                if c == 1 and not use_temp:
+                    #self.set_gas_with_house (x, y)
+                    #self.set_house_with_gas (i, j)
+                    self.set_excluded (x, y)
 
     def update_excluded (self):
 
@@ -289,6 +308,7 @@ class Architect:
     def update_best_score (self):
         self.update_houses_with_gas (True)
         score = self.get_number_of_houses (True, True)
+        # print (score)
         if score > self.score:
             self.matrix_excluded_temp = self.matrix_excluded
             self.matrix_gas_temp = self.matrix_gas
@@ -310,7 +330,7 @@ class Architect:
         empty_fields = self.get_all_not_excluded ()
         houses_to_be_fixed = self.get_number_of_houses (False, False)
             
-        while not solved and not all_combinations_checked:
+        while not solved or not all_combinations_checked:
 
             combinations_to_check = self.dp.get_combinations (empty_fields, houses_to_be_fixed, max_combinations, start_from_combination)
             for combination in combinations_to_check:
@@ -336,7 +356,7 @@ class Architect:
             if not combinations_to_check:
                 all_combinations_checked = True
                 if not solved:
-                    if verbose:
+                    if self.verbose:
                         print ("\n--> Solution not found !!!\n")
                 break
 

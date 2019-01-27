@@ -80,5 +80,5 @@ matrix_house[11][11] = 1
 wages = [[5,1,2,4,0,5,0,4,2,3,2,3], [4,2,2,3,1,3,3,2,1,5,0,5]]
 
 a2 = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, True)
-#a2.print (False)
-#a2.solve ()
+a2.print (False)
+a2.solve ()

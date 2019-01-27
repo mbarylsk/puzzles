@@ -151,6 +151,40 @@ class TestMethods(unittest.TestCase):
         result3 = numpy.allclose(dp.get_submatrix_3(matrix_gas, 5, 1), temp_target_3)
         self.assertTrue(result3)
 
+    def test_is_x_correct (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+
+        dp = dataprocessing.DataProcessing ()
+        m = numpy.zeros((10, 11))
+        self.assertTrue(dp.is_x_correct(m, 0))
+        self.assertTrue(dp.is_x_correct(m, 1))
+        self.assertTrue(dp.is_x_correct(m, 9))
+
+    def test_is_x_correct_negative (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+
+        dp = dataprocessing.DataProcessing ()
+        m = numpy.zeros((10, 11))
+        self.assertFalse(dp.is_x_correct(m, 10))
+        self.assertFalse(dp.is_x_correct(m, -1))
+
+    def test_is_y_correct (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+
+        dp = dataprocessing.DataProcessing ()
+        m = numpy.zeros((10, 11))
+        self.assertTrue(dp.is_y_correct(m, 0))
+        self.assertTrue(dp.is_y_correct(m, 1))
+        self.assertTrue(dp.is_y_correct(m, 10))
+
+    def test_is_y_correct_negative (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+
+        dp = dataprocessing.DataProcessing ()
+        m = numpy.zeros((10, 11))
+        self.assertFalse(dp.is_y_correct(m, 11))
+        self.assertFalse(dp.is_y_correct(m, -1))
+
     def test_get_combinations (self):
         print ("\n TEST CASE:", sys._getframe().f_code.co_name)
 
