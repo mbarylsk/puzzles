@@ -229,6 +229,23 @@ class TestMethods(unittest.TestCase):
         result3 = numpy.allclose(dp.get_submatrix_3(matrix_gas, 5, 1), temp_target_3)
         self.assertTrue(result3)
 
+    def test_change_matrix_nonzero_to_value (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+
+        m_3 = numpy.zeros((3, 3))
+        temp_target_3 = numpy.zeros ((3, 3))
+        dp = dataprocessing.DataProcessing ()
+
+        m_3[1][1] = 2
+        temp_target_3[1][1] = 1
+        result1 = numpy.allclose(dp.change_matrix_nonzero_to_value(m_3, 1), temp_target_3)
+        self.assertTrue(result1)
+
+        m_3[1][1] = 4
+        temp_target_3[1][1] = 2
+        result2 = numpy.allclose(dp.change_matrix_nonzero_to_value(m_3, 2), temp_target_3)
+        self.assertTrue(result2)
+
     def test_is_x_correct (self):
         print ("\n TEST CASE:", sys._getframe().f_code.co_name)
 
