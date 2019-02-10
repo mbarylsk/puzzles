@@ -136,6 +136,82 @@ class TestMethods(unittest.TestCase):
         
         a.print(False)
 
+    def test_is_house_without_gas_west (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+        h = 3
+        w = 3
+        matrix_excluded = numpy.zeros((h, w))
+        matrix_gas = numpy.zeros((h, w))
+        matrix_house = numpy.zeros((h, w))
+        matrix_house[0][0] = 1
+        matrix_house[1][1] = 1
+        matrix_gas[0][1] = GAS_HOUSE_WEST
+        wages = [[1,0,0], [0,1,0]]
+        dp = dataprocessing.DataProcessing ()
+        a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
+        a.update_excluded()
+        self.assertFalse (a.is_house_with_gas(1,1))
+        self.assertTrue (a.is_house_with_gas(0,0))
+        
+        a.print(False)
+
+    def test_is_house_without_gas_east (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+        h = 3
+        w = 3
+        matrix_excluded = numpy.zeros((h, w))
+        matrix_gas = numpy.zeros((h, w))
+        matrix_house = numpy.zeros((h, w))
+        matrix_house[2][2] = 1
+        matrix_house[2][1] = 1
+        matrix_gas[2][1] = GAS_HOUSE_EAST
+        wages = [[0,0,1], [0,1,0]]
+        dp = dataprocessing.DataProcessing ()
+        a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
+        a.update_excluded()
+        self.assertFalse (a.is_house_with_gas(1,1))
+        self.assertTrue (a.is_house_with_gas(2,2))
+        
+        a.print(False)
+
+    def test_is_house_without_gas_north (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+        h = 3
+        w = 3
+        matrix_excluded = numpy.zeros((h, w))
+        matrix_gas = numpy.zeros((h, w))
+        matrix_house = numpy.zeros((h, w))
+        matrix_house[1][1] = 1
+        matrix_house[0][2] = 1
+        matrix_gas[1][2] = GAS_HOUSE_NORTH
+        wages = [[0,1,0], [0,0,1]]
+        dp = dataprocessing.DataProcessing ()
+        a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
+        a.update_excluded()
+        self.assertFalse (a.is_house_with_gas(1,1))
+        self.assertTrue (a.is_house_with_gas(0,2))
+        
+        a.print(False)
+
+    def test_is_house_without_gas_south (self):
+        print ("\n TEST CASE:", sys._getframe().f_code.co_name)
+        h = 3
+        w = 3
+        matrix_excluded = numpy.zeros((h, w))
+        matrix_gas = numpy.zeros((h, w))
+        matrix_house = numpy.zeros((h, w))
+        matrix_house[1][1] = 1
+        matrix_house[2][0] = 1
+        matrix_gas[1][0] = GAS_HOUSE_SOUTH
+        wages = [[0,1,0], [1,0,0]]
+        dp = dataprocessing.DataProcessing ()
+        a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
+        a.update_excluded()
+        self.assertFalse (a.is_house_with_gas(1,1))
+        self.assertTrue (a.is_house_with_gas(2,0))
+        
+        a.print(False)
+
     def test_is_solved_negative (self):
         print ("\n TEST CASE:", sys._getframe().f_code.co_name)
         h = 6

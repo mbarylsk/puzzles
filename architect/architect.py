@@ -104,6 +104,17 @@ class Architect:
                 return True
             return False
 
+    def is_house_without_gas (self, x, y, use_temp):
+        if self.is_gas(x-1, y, GAS_HOUSE_SOUTH, False):
+            return False
+        if self.is_gas(x+1, y, GAS_HOUSE_NORTH, False):
+            return False
+        if self.is_gas(x, y-1, GAS_HOUSE_EAST, False):
+            return False
+        if self.is_gas(x, y+1, GAS_HOUSE_WEST, False):
+            return False
+        return True
+
     def is_empty (self, x, y, use_temp):
         if not self.is_gas_any (x, y, use_temp) and not self.is_house (x, y, use_temp) and not self.is_excluded(x, y, use_temp):
             return True
@@ -237,9 +248,12 @@ class Architect:
                             output_sum += 1
         return output_sum
 
+    # Returns True if method was able to update any location with gas
+    # Otherwise returns False
     def update_gas_in_all_certain_places (self, use_temp):
 
-        # check single places
+        # Approach #1 - locate free places (by checking all fields one-by-one)
+        # that has no other options - gas must be here
         for i in range(self.h):
             for j in range(self.w):
                 c = 0
@@ -269,12 +283,63 @@ class Architect:
                         value = GAS_HOUSE_SOUTH
                 if c == 1 and not use_temp:
                     self.set_gas_with_house (x, y, value)
-                    print (x, y, c)
                     return True
 
-        # check lines
-        # TODO
-        
+        # Approach #2 - locate free places in lines (by checking both vertical and horizontal lines)
+        # If there is one free place left and there is still one more gas to place, gas must in this location
+
+        # horizontally
+        for i in range(self.h):
+            temp_sum_gas = 0
+            temp_sum_not_excluded = 0
+            x = 0
+            y = 0
+            for j in range(self.w):
+                if self.is_gas_any (i, j, False):
+                    temp_sum_gas += 1
+                if not self.is_excluded (i, j, False):
+                    temp_sum_not_excluded += 1
+                    x = i
+                    y = j
+
+            if self.wages[0][i] - temp_sum_gas == 1 and temp_sum_not_excluded == 1:
+                if self.dp.is_x_correct (self.matrix_house, x-1) and self.is_house_without_gas (x-1, y, False):
+                    value = GAS_HOUSE_WEST
+                elif self.dp.is_x_correct (self.matrix_house, x+1) and self.is_house_without_gas (x-1, y, False):
+                    value = GAS_HOUSE_EAST
+                elif self.dp.is_y_correct (self.matrix_house, y-1) and self.is_house_without_gas (x-1, y, False):
+                    value = GAS_HOUSE_SOUTH
+                elif self.dp.is_y_correct (self.matrix_house, y+1) and self.is_house_without_gas (x-1, y, False):
+                    value = GAS_HOUSE_NORTH
+                self.set_gas_with_house (x, y, value)
+                return True
+
+        # vertically
+        for j in range(self.h):
+            temp_sum_gas = 0
+            temp_sum_not_excluded = 0
+            x = 0
+            y = 0
+            for i in range(self.w):
+                if self.is_gas_any (i, j, False):
+                    temp_sum_gas += 1
+                if not self.is_excluded (i, j, False):
+                    temp_sum_not_excluded += 1
+                    x = i
+                    y = j
+
+            if self.wages[1][j] - temp_sum_gas == 1 and temp_sum_not_excluded == 1:
+                if self.dp.is_x_correct (self.matrix_house, x-1) and self.is_house_without_gas (x-1, y, False):
+                    value = GAS_HOUSE_WEST
+                elif self.dp.is_x_correct (self.matrix_house, x+1) and self.is_house_without_gas (x-1, y, False):
+                    value = GAS_HOUSE_EAST
+                elif self.dp.is_y_correct (self.matrix_house, y-1) and self.is_house_without_gas (x-1, y, False):
+                    value = GAS_HOUSE_SOUTH
+                elif self.dp.is_y_correct (self.matrix_house, y+1) and self.is_house_without_gas (x-1, y, False):
+                    value = GAS_HOUSE_NORTH
+                self.set_gas_with_house (x, y, value)
+                return True
+
         return False
 
     def update_excluded (self):
@@ -396,11 +461,11 @@ class Architect:
                     if self.verbose:
                         print ("\n---> Found solution !!!\n")
                     break
-                else:
-                    score_improved = self.update_best_score ()
+                #else:
+                    #score_improved = self.update_best_score ()
                     #if self.verbose and score_improved:
                     #    self.print (True)
-                    self.cleanup_of_gas_candidates()
+                    #self.cleanup_of_gas_candidates()
 
             start_from_combination += max_combinations
 
