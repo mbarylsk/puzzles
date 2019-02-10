@@ -49,6 +49,16 @@ class DataProcessing:
 
         return o_m
 
+    def change_matrix_nonzero_to_value (self, i_m, value):
+        shape_x = i_m.shape[0]
+        shape_y = i_m.shape[1]
+        o_m = numpy.zeros ((shape_x,shape_y))
+        for i in range(shape_x):
+            for j in range(shape_y):
+                if i_m[i][j] > 0:
+                    o_m[i][j] = value
+        return o_m  
+
     def are_matrices_equal (self, m1, m2):
         return numpy.allclose(m1, m2)
 

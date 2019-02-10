@@ -19,10 +19,11 @@
 import numpy
 import dataprocessing
 
-GAS_HOUSE_NORTH = 1
-GAS_HOUSE_EAST = 2
-GAS_HOUSE_SOUTH = 3
-GAS_HOUSE_WEST = 4
+GAS_CANDIDATE = 1
+GAS_HOUSE_NORTH = 2
+GAS_HOUSE_EAST = 3
+GAS_HOUSE_SOUTH = 4
+GAS_HOUSE_WEST = 5
 
 class Architect:
 
@@ -89,7 +90,7 @@ class Architect:
             return False
 
     def is_gas_candidate (self, x, y):
-        if self.dp.is_x_correct (self.matrix_gas, x) and self.dp.is_x_correct (self.matrix_gas, y) and self.matrix_gas [x][y] == 1:
+        if self.dp.is_x_correct (self.matrix_gas, x) and self.dp.is_x_correct (self.matrix_gas, y) and self.matrix_gas [x][y] == GAS_CANDIDATE:
             return True
         return False
 
@@ -111,13 +112,13 @@ class Architect:
 
     def is_house_with_gas (self, x, y):
         if self.is_house (x, y, False):
-            if self.is_gas(x-1, y, GAS_HOUSE_EAST, False):
+            if self.is_gas(x-1, y, GAS_HOUSE_SOUTH, False):
                 return True
-            if self.is_gas(x+1, y, GAS_HOUSE_WEST, False):
+            if self.is_gas(x+1, y, GAS_HOUSE_NORTH, False):
                 return True
-            if self.is_gas(x, y-1, GAS_HOUSE_SOUTH, False):
+            if self.is_gas(x, y-1, GAS_HOUSE_EAST, False):
                 return True
-            if self.is_gas(x, y+1, GAS_HOUSE_NORTH, False):
+            if self.is_gas(x, y+1, GAS_HOUSE_WEST, False):
                 return True
         return False
 
@@ -137,7 +138,7 @@ class Architect:
 
     def set_gas_candidate (self, x, y):
         if self.dp.is_x_correct(self.matrix_gas, x) and self.dp.is_y_correct(self.matrix_gas, y):
-            self.matrix_gas [x][y] = 1
+            self.matrix_gas [x][y] = GAS_CANDIDATE
 
     def set_gas_with_house (self, x, y, value):
         if self.dp.is_x_correct(self.matrix_gas, x) and self.dp.is_y_correct(self.matrix_gas, y):
@@ -171,7 +172,8 @@ class Architect:
         for i in range(self.h):
             temp_sum = 0
             for j in range(self.w):
-                temp_sum += self.matrix_gas[i][j]
+                if self.is_gas_any (i, j, False):
+                    temp_sum += 1
             if temp_sum != self.wages[0][i]:
                 return False
 
@@ -179,7 +181,8 @@ class Architect:
         for j in range(self.h):
             temp_sum = 0
             for i in range(self.w):
-               temp_sum += self.matrix_gas[i][j]
+                if self.is_gas_any (i, j, False):
+                    temp_sum += 1
             if temp_sum != self.wages[1][j]:
                 return False
 
@@ -205,7 +208,8 @@ class Architect:
                 if self.is_gas_any (i, j, False):
                     temp_target_3 = numpy.zeros ((3, 3))
                     temp_target_3[1][1] = 1
-                    if not self.dp.are_matrices_equal (self.dp.get_submatrix_3 (self.matrix_gas, i, j), temp_target_3):
+                    temp_current_3 = self.dp.change_matrix_nonzero_to_value (self.dp.get_submatrix_3 (self.matrix_gas, i, j), 1)
+                    if not self.dp.are_matrices_equal (temp_current_3, temp_target_3):
                         return False
 
         # TBD - number of houses with gas matches number of gas containers
@@ -234,6 +238,8 @@ class Architect:
         return output_sum
 
     def update_gas_in_all_certain_places (self, use_temp):
+
+        # check single places
         for i in range(self.h):
             for j in range(self.w):
                 c = 0
@@ -265,6 +271,10 @@ class Architect:
                     self.set_gas_with_house (x, y, value)
                     print (x, y, c)
                     return True
+
+        # check lines
+        # TODO
+        
         return False
 
     def update_excluded (self):
