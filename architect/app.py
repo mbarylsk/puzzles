@@ -39,6 +39,7 @@ wages = [[1,0,2,1,2,1], [1,1,2,1,1,1]]
 a1 = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, True)
 a1.print (False)
 a1.solve ()
+print (a1.matrix_gas)
 
 h = 12
 w = 12

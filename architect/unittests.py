@@ -77,7 +77,7 @@ class TestMethods(unittest.TestCase):
         dp = dataprocessing.DataProcessing ()
         a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
         a.update_excluded()
-        self.assertTrue (a.is_house_with_gas(1,1), True)
+        self.assertTrue (a.is_house_with_gas(1,1, False), True)
         self.assertTrue (a.is_solved(), True)
         
         a.print(False)
@@ -95,7 +95,7 @@ class TestMethods(unittest.TestCase):
         dp = dataprocessing.DataProcessing ()
         a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
         a.update_excluded()
-        self.assertTrue (a.is_house_with_gas(1,1), True)
+        self.assertTrue (a.is_house_with_gas(1,1, False), True)
         self.assertTrue (a.is_solved(), True)
 
         a.print(False)
@@ -113,7 +113,7 @@ class TestMethods(unittest.TestCase):
         dp = dataprocessing.DataProcessing ()
         a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
         a.update_excluded()
-        self.assertTrue (a.is_house_with_gas(1,1), True)
+        self.assertTrue (a.is_house_with_gas(1,1, False), True)
         self.assertTrue (a.is_solved(), True)
         
         a.print(False)
@@ -131,7 +131,7 @@ class TestMethods(unittest.TestCase):
         dp = dataprocessing.DataProcessing ()
         a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
         a.update_excluded()
-        self.assertTrue (a.is_house_with_gas(1,1), True)
+        self.assertTrue (a.is_house_with_gas(1,1, False), True)
         self.assertTrue (a.is_solved(), True)
         
         a.print(False)
@@ -150,8 +150,8 @@ class TestMethods(unittest.TestCase):
         dp = dataprocessing.DataProcessing ()
         a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
         a.update_excluded()
-        self.assertFalse (a.is_house_with_gas(1,1))
-        self.assertTrue (a.is_house_with_gas(0,0))
+        self.assertFalse (a.is_house_with_gas(1,1, False))
+        self.assertTrue (a.is_house_with_gas(0,0, False))
         
         a.print(False)
 
@@ -169,8 +169,8 @@ class TestMethods(unittest.TestCase):
         dp = dataprocessing.DataProcessing ()
         a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
         a.update_excluded()
-        self.assertFalse (a.is_house_with_gas(1,1))
-        self.assertTrue (a.is_house_with_gas(2,2))
+        self.assertFalse (a.is_house_with_gas(1,1, False))
+        self.assertTrue (a.is_house_with_gas(2,2, False))
         
         a.print(False)
 
@@ -188,8 +188,8 @@ class TestMethods(unittest.TestCase):
         dp = dataprocessing.DataProcessing ()
         a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
         a.update_excluded()
-        self.assertFalse (a.is_house_with_gas(1,1))
-        self.assertTrue (a.is_house_with_gas(0,2))
+        self.assertFalse (a.is_house_with_gas(1,1, False))
+        self.assertTrue (a.is_house_with_gas(0,2, False))
         
         a.print(False)
 
@@ -207,8 +207,8 @@ class TestMethods(unittest.TestCase):
         dp = dataprocessing.DataProcessing ()
         a = architect.Architect(dp, matrix_excluded, matrix_gas, matrix_house, wages, h, w, False)
         a.update_excluded()
-        self.assertFalse (a.is_house_with_gas(1,1))
-        self.assertTrue (a.is_house_with_gas(2,0))
+        self.assertFalse (a.is_house_with_gas(1,1, False))
+        self.assertTrue (a.is_house_with_gas(2,0, False))
         
         a.print(False)
 
